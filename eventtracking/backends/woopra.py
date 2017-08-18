@@ -39,19 +39,18 @@ class WoopraBackend(BaseBackend):
 
     def send(self, event):
         """Use the woopra.com python API to send the event to woopra.com"""
-        LOG.critical('EVENT-TRACKING WoopraBackend: WANT TO SEND')
-
-        event_name = event.get('name', '')
-        event_type = event.get('event_type', '')
-        if len(event_name) == 0:
-            event_name = event_type
-        LOG.critical('EVENT-TRACKING WoopraBackend: TRY TO SEND %s', event_name)
-
-        username = event.get('username', '')
-        LOG.critical('EVENT-TRACKING WoopraBackend: TRY TO SEND for user %s', username)
-
         if self.url:
-            LOG.critical('EVENT-TRACKING WoopraBackend: FOUND url %s', self.url)
+            LOG.critical('EVENT-TRACKING WoopraBackend: WANT TO SEND to %s', self.url)
+
+            event_name = event.get('name', '')
+            event_type = event.get('event_type', '')
+            if len(event_name) == 0:
+                event_name = event_type
+            LOG.critical('EVENT-TRACKING WoopraBackend: TRY TO SEND %s', event_name)
+
+            username = event.get('username', '')
+            LOG.critical('EVENT-TRACKING WoopraBackend: TRY TO SEND for user %s', username)
+
             if len(username) == 0 or len(event_name) == 0:
                 LOG.critical('EVENT-TRACKING WoopraBackend: DO NOT SEND %s', event_name)
                 return
