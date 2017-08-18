@@ -1,0 +1,7 @@
+mock
+nose
+coverage
+pep8
+pylint
+django-nose==1.4.1
+sphinx==1.1.3
