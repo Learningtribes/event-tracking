@@ -40,19 +40,14 @@ class WoopraBackend(BaseBackend):
     def send(self, event):
         """Use the woopra.com python API to send the event to woopra.com"""
         if self.url:
-            LOG.critical('EVENT-TRACKING WoopraBackend: WANT TO SEND to %s', self.url)
+            username = event.get('username', '')
 
             event_name = event.get('name', '')
             event_type = event.get('event_type', '')
             if len(event_name) == 0:
                 event_name = event_type
-            LOG.critical('EVENT-TRACKING WoopraBackend: TRY TO SEND %s', event_name)
-
-            username = event.get('username', '')
-            LOG.critical('EVENT-TRACKING WoopraBackend: TRY TO SEND for user %s', username)
 
             if len(username) == 0 or len(event_name) == 0:
-                LOG.critical('EVENT-TRACKING WoopraBackend: DO NOT SEND %s', event_name)
                 return
 
             try:
@@ -89,18 +84,21 @@ class WoopraBackend(BaseBackend):
                         course_started_prop = "%s_started"% course_id
                         user_properties[course_started_prop] = 1
 
+                if event_name.startswith("/"):
+                    event['title'] = event_name
+                    event['url'] = event.get('referer', '')
+                    event_name = "pv"
+
                 woopra.identify(user_properties)
 
                 if event_name == self.PROBLEM_CHECK_EVENT:
                    if event_type == self.PROBLEM_CHECK_EVENT and event.get('event_source', '') == "server":
                        event_name = "lt.%s" % self.PROBLEM_CHECK_EVENT
                        woopra.track(event_name, event)
-                       LOG.critical('EVENT-TRACKING WoopraBackend: SENT %s', event_name)
-                   else:
-                       LOG.critical('EVENT-TRACKING WoopraBackend: DID NOT SEND %s', event_name)
+                       LOG.info('EVENT-TRACKING WoopraBackend: SENT %s for %s', event_name, username)
                 else:
                     woopra.track(event_name, event)
-                    LOG.critical('EVENT-TRACKING WoopraBackend: SENT %s', event_name)
+                    LOG.info('EVENT-TRACKING WoopraBackend: SENT %s for %s', event_name, username)
 
             except:
                 LOG.error('EVENT-TRACKING WoopraBackend: EXCEPTION')
