@@ -29,6 +29,10 @@ class WoopraBackend(BaseBackend):
     PROBLEM_CHECK_EVENT = "problem_check"
     PROGRESS_EVENT = "lt.progress_summary"
     COURSEWARE_EVENT = "courseware"
+    FEED_CREATE_USER_EVENT = "feed.create_user"
+    FEED_UPDATE_USER_EVENT = "feed.update_user"
+    FEED_DEACTIVATE_USER_EVENT = "feed.deactivate_user"
+
 
     def __init__(self, **kwargs):
         super(WoopraBackend, self).__init__(**kwargs)
@@ -69,7 +73,12 @@ class WoopraBackend(BaseBackend):
                     user_properties[prop] = prop_new_val
 
                 event_user_properties = event.get('user_properties')
-                if event_user_properties is not None and event_name == self.PROGRESS_EVENT:
+                if event_user_properties is not None and event_name in [
+                   self.PROGRESS_EVENT,
+                   self.FEED_CREATE_USER_EVENT,
+                   self.FEED_UPDATE_USER_EVENT,
+                   self.FEED_DEACTIVATE_USER_EVENT
+                ]:
                     for prop, val in event_user_properties.iteritems():
                         user_properties[prop] = val
 
