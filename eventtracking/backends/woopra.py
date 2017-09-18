@@ -24,6 +24,7 @@ class WoopraBackend(BaseBackend):
 
     IDLE_TIMEOUT = 300000
     IS_SECURE = True
+    EVENT_BLACK_LIST = []
 
     SETTINGS_CHANGED_EVENT = "edx.user.settings.changed"
     PROBLEM_CHECK_EVENT = "problem_check"
@@ -39,6 +40,7 @@ class WoopraBackend(BaseBackend):
         self.url = kwargs.get('url', None)
         self.idle_timeout = kwargs.get('idle_timeout', self.IDLE_TIMEOUT)
         self.is_secure = kwargs.get('secure', self.IS_SECURE)
+        self.event_black_list = self.EVENT_BLACK_LIST + kwargs.get('event_black_list', [])
 
 
     def send(self, event):
