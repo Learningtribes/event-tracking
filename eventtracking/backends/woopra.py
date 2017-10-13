@@ -101,7 +101,10 @@ class WoopraBackend(BaseBackend):
                     event_name = "pv"
 
                 woopra.identify(user_properties)
-
+                
+                woopra.user_properties = {k: v.encode('utf-8') for k, v in user_properties.iteritems()}
+                event = {k: v.encode('utf-8') for k, v in event.iteritems()}
+                
                 if event_name == self.PROBLEM_CHECK_EVENT:
                    if event_type == self.PROBLEM_CHECK_EVENT and event.get('event_source', '') == "server":
                        event_name = "lt.%s" % self.PROBLEM_CHECK_EVENT
