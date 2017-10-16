@@ -44,7 +44,9 @@ class WoopraBackend(BaseBackend):
 
 
     def send(self, event):
-        """Use the woopra.com python API to send the event to woopra.com"""
+        """Use the woopra.com python API to send the event to woopra.com
+        all the value in event should be unicode object.
+        """
         if self.url:
             username = event.get('username', '')
 
@@ -53,7 +55,7 @@ class WoopraBackend(BaseBackend):
             if len(event_name) == 0:
                 event_name = event_type
 
-            if len(username) == 0 or len(event_name) == 0:
+            if len(username) == 0 or len(event_name) == 0 or event_name in self.event_black_list:
                 return
 
             try:
