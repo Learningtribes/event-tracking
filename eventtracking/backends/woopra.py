@@ -102,10 +102,10 @@ class WoopraBackend(BaseBackend):
                     event['url'] = event.get('referer', '')
                     event_name = "pv"
 
+                user_properties = {k: v.encode('utf-8') if isinstance(v, unicode) else v for k, v in user_properties.iteritems()}
                 woopra.identify(user_properties)
                 
-                woopra.user_properties = {k: v.encode('utf-8') for k, v in user_properties.iteritems() if isinstance(v, unicode)}
-                event = {k: v.encode('utf-8') for k, v in event.iteritems() if isinstance(v, unicode)}
+                event = {k: v.encode('utf-8') if isinstance(v, unicode) else v for k, v in event.iteritems()}
                 
                 if event_name == self.PROBLEM_CHECK_EVENT:
                    if event_type == self.PROBLEM_CHECK_EVENT and event.get('event_source', '') == "server":
