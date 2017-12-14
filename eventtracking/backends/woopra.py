@@ -26,7 +26,10 @@ class WoopraBackend(BaseBackend):
     IS_SECURE = True
     EVENT_BLACK_LIST = []
 
+    PAGE_VIEW_EVENT = "pv"
     SETTINGS_CHANGED_EVENT = "edx.user.settings.changed"
+    COURSE_ENROLL_EVENT = "edx.course.enrollment.activated"
+    COURSE_UNENROLL_EVENT = "edx.course.enrollment.deactivated"
     PROBLEM_CHECK_EVENT = "problem_check"
     PROGRESS_EVENT = "lt.progress_summary"
     COURSEWARE_EVENT = "courseware"
@@ -63,11 +66,19 @@ class WoopraBackend(BaseBackend):
                 woopra.set_secure(self.is_secure)
                 woopra.set_idle_timeout(self.idle_timeout)
 
+                user_id = event.get('context', {}).get('user_id')
+
+                if event_name in [self.COURSE_ENROLL_EVENT, self.COURSE_UNENROLL_EVENT]:
+                    event['event']['action_from'] = username 
+                    username = event.get('event').get('username')
+                    event['username'] = username
+                    user_id = event.get('event').get('user_id')
+
                 user_properties = {
                     'id': username,
                     'username': username,
                 }
-                user_id = event.get('context', {}).get('user_id')
+
                 if user_id is not None:
                     user_properties['user_id'] = user_id
 
@@ -100,7 +111,7 @@ class WoopraBackend(BaseBackend):
                 if event_name.startswith("/"):
                     event['title'] = event_name
                     event['url'] = event.get('referer', '')
-                    event_name = "pv"
+                    event_name = self.PAGE_VIEW_EVENT
 
                 user_properties = {k: v.encode('utf-8') if isinstance(v, unicode) else v for k, v in user_properties.iteritems()}
                 woopra.identify(user_properties)
@@ -114,7 +125,8 @@ class WoopraBackend(BaseBackend):
                        LOG.info('EVENT-TRACKING WoopraBackend: SENT %s for %s', event_name, username)
                 else:
                     woopra.track(event_name, event)
-                    LOG.info('EVENT-TRACKING WoopraBackend: SENT %s for %s', event_name, username)
+                    if event_name != self.PAGE_VIEW_EVENT:
+                        LOG.info('EVENT-TRACKING WoopraBackend: SENT %s for %s', event_name, username)
 
             except:
                 LOG.error('EVENT-TRACKING WoopraBackend: EXCEPTION')
