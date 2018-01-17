@@ -87,15 +87,19 @@ class WoopraBackend(BaseBackend):
                     prop_new_val = event.get('event').get('new')
                     user_properties[prop] = prop_new_val
 
-                event_user_properties = event.get('user_properties')
-                if event_user_properties is not None and event_name in [
+                if event.get('user_properties') is not None and event_name in [
                    self.PROGRESS_EVENT,
                    self.FEED_CREATE_USER_EVENT,
                    self.FEED_UPDATE_USER_EVENT,
                    self.FEED_DEACTIVATE_USER_EVENT
                 ]:
-                    for prop, val in event_user_properties.iteritems():
+                    for prop, val in event.get('user_properties').iteritems():
                         user_properties[prop] = val
+
+                if event_name == self.COURSE_ENROLL_EVENT and event.get('event').get('user_properties') is not None:
+                    for prop, val in event.get('event').get('user_properties').iteritems():
+                        user_properties[prop] = val
+
 
                 if event_name.find(self.COURSEWARE_EVENT) >=0:
                     course_id = event.get('context', {}).get('course_id')
