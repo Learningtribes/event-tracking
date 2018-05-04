@@ -36,6 +36,7 @@ class WoopraBackend(BaseBackend):
     FEED_CREATE_USER_EVENT = "feed.create_user"
     FEED_UPDATE_USER_EVENT = "feed.update_user"
     FEED_DEACTIVATE_USER_EVENT = "feed.deactivate_user"
+    REGISTRATION_EVENT = 'edx.user.registration'
 
 
     def __init__(self, **kwargs):
@@ -91,7 +92,8 @@ class WoopraBackend(BaseBackend):
                    self.PROGRESS_EVENT,
                    self.FEED_CREATE_USER_EVENT,
                    self.FEED_UPDATE_USER_EVENT,
-                   self.FEED_DEACTIVATE_USER_EVENT
+                   self.FEED_DEACTIVATE_USER_EVENT,
+                   self.REGISTRATION_EVENT
                 ]:
                     for prop, val in event.get('user_properties').iteritems():
                         user_properties[prop] = val
